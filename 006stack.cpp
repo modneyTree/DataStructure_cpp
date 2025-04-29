@@ -1,106 +1,130 @@
-#include <bits/stdc++.h>
+#include <iostream>
+#include <stack>
+#include <string>
+#include <cctype>
 using namespace std;
 
-int main(void)
+/*
+목차
+1. 스택 기본 사용법
+  1) push, pop, top, size, empty
+주의사항 : s.pop() 전에 s.empty() 꼭 확인!
+2. 예제
+  1) 문자열 뒤집기
+  2) 괄호 유효성 검사
+  3) 후위 표기식 계산
+*/
+
+// 1) 문자열 뒤집기
+void reverseString()
 {
-  stack<int> S;
-  S.push(10);               // 10
-  S.push(20);               // 10 20
-  S.push(30);               // 10 20 30
-  cout << S.size() << '\n'; // 3
-  if (S.empty())
-    cout << "S is empty\n";
-  else
-    cout << "S is not empty\n"; // S is not empty
-  S.pop();                      // 10 20
-  cout << S.top() << '\n';      // 20
-  S.pop();                      // 10
-  cout << S.top() << '\n';      // 10
-  S.pop();                      // empty
-  if (S.empty())
-    cout << "S is empty\n"; // S is empty
-  // cout << S.top() << '\n';  // runtime error 발생 --> segmentation fault
-
-  // stack을 이용한 반전 출력
-  for (int i = 0; i < 5; i++)
-    S.push(i);
-
-  while (!S.empty())
-  {
-    cout << S.top() << ' ';
-    S.pop();
-  }
-}
-
-void stack_example()
-{
-  // 스택 선언
-  stack<int> S;
-  stack<int> S2(S);         // S를 복사한 S2 생성
-  stack<int> S3({1, 2, 3}); // 초기화 리스트를 이용한 스택 생성
-
-  // 삽입 연산
-  S.push(10);
-
-  // 삭제 연산
-  S.pop();
-
-  // 정보 가져오기
-  S.size();
-  S.top();   // 스택의 맨 위 원소 반환
-  S.empty(); // 스택이 비어있으면 true, 아니면 false 반환
-
-  // 기타
-  S.swap(S2);        // S와 S2의 원소를 서로 바꿈, 전부 복사되므로 시간복잡도 O(N)
-  S = S2;            // S2의 원소를 S에 복사
-  S2 = stack<int>(); // S2를 비움
-
-  // stack을 이용한 반전 출력
-  for (int i = 0; i < 5; i++)
-    S.push(i); // 0 1 2 3 4
-
-  while (!S.empty())
-  {
-    cout << S.top() << ' '; // 4 3 2 1 0
-    S.pop();
-  }
-
-  // stack을 이용한 문자열 뒤집기
   string str = "abcde";
-  stack<char> S;
+  stack<char> s;
   for (char c : str)
-    S.push(c);
+    s.push(c);
+
+  cout << "[문자열 뒤집기] ";
+  while (!s.empty())
+  {
+    cout << s.top();
+    s.pop();
+  }
+  cout << endl;
 }
 
-void make_stack_with_array()
+// 2) 괄호 유효성 검사
+void checkParentheses()
 {
-  // 배열을 이용한 스택 구현
-  int stack[10000];
-  int size = 0;
+  string str = "(()())";
+  stack<char> s;
+  bool isValid = true;
 
-  // 삽입 연산
-  stack[size++] = 10;
+  for (char c : str)
+  {
+    if (c == '(')
+      s.push(c);
+    else
+    {
+      if (s.empty())
+      {
+        isValid = false;
+        break;
+      }
+      s.pop();
+    }
+  }
+  if (!s.empty())
+    isValid = false;
 
-  // 삭제 연산
-  size--;
-
-  // 정보 가져오기
-  stack[size - 1]; // 스택의 맨 위 원소 반환
-  size == 0;       // 스택이 비어있으면 true, 아니면 false 반환
+  cout << "[괄호 검사] " << (isValid ? "YES" : "NO") << endl;
 }
 
-void make_stack_with_list()
+// 3) 후위 표기식 계산
+void postfixEval()
 {
-  // 리스트를 이용한 스택 구현
-  list<int> L;
+  string expr = "23+5*"; // (2 + 3) * 5 = 25
+  stack<int> s;
 
-  // 삽입 연산
-  L.push_back(10);
+  for (char c : expr)
+  {
+    if (isdigit(c))
+      s.push(c - '0');
+    else
+    {
+      int b = s.top();
+      s.pop();
+      int a = s.top();
+      s.pop();
+      if (c == '+')
+        s.push(a + b);
+      else if (c == '-')
+        s.push(a - b);
+      else if (c == '*')
+        s.push(a * b);
+      else if (c == '/')
+        s.push(a / b);
+    }
+  }
 
-  // 삭제 연산
-  L.pop_back();
+  cout << "[후위 계산] " << s.top() << endl;
+}
 
-  // 정보 가져오기
-  L.back();  // 스택의 맨 위 원소 반환
-  L.empty(); // 스택이 비어있으면 true, 아니면 false 반환
+// 기본 사용법 시연
+void basicStackUsage()
+{
+  stack<int> s;
+  s.push(10);
+  s.push(20);
+  s.push(30);
+
+  cout << "[기본 사용법]" << endl;
+  cout << "Size: " << s.size() << endl;
+  cout << "Top: " << s.top() << endl;
+
+  s.pop();
+  cout << "Top after pop: " << s.top() << endl;
+
+  s.pop();
+  s.pop();
+  cout << "Empty? " << (s.empty() ? "Yes" : "No") << endl;
+}
+
+int main()
+{
+  ios::sync_with_stdio(false);
+  cin.tie(nullptr);
+
+  basicStackUsage();
+  cout << "-------------------" << endl;
+
+  reverseString();
+  cout << "-------------------" << endl;
+
+  checkParentheses();
+  cout << "-------------------" << endl;
+
+  postfixEval();
+  cout << "-------------------" << endl;
+
+  return 0;
 }
